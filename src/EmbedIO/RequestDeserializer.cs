@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Swan.Formatters;
 using Swan.Logging;
 
@@ -40,6 +41,8 @@ namespace EmbedIO
         public static RequestDeserializerCallback<TData> Json<TData>(JsonSerializerCase jsonSerializerCase)
             => context => JsonInternal<TData>(context, jsonSerializerCase);
 
+        private static JsonSerializerSettings JsonSerializerSettings { get; set; } = new JsonSerializerSettings { ContractResolver = new GetOnlyContractResolver() };
+
         private static async Task<TData> JsonInternal<TData>(IHttpContext context, JsonSerializerCase jsonSerializerCase)
         {
             string body;
@@ -50,7 +53,8 @@ namespace EmbedIO
 
             try
             {
-                return Swan.Formatters.Json.Deserialize<TData>(body, jsonSerializerCase);
+                return JsonConvert.DeserializeObject<TData>(body, JsonSerializerSettings);
+                //return Swan.Formatters.Json.Deserialize<TData>(body, jsonSerializerCase);
             }
             catch (FormatException)
             {
