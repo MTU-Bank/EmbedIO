@@ -37,6 +37,7 @@ namespace EmbedIO.Net.Internal
             RemoteEndPoint = Request.RemoteEndPoint;
             Route = RouteMatch.None;
             Session = SessionProxy.None;
+            this.JwtService = this.Listener is null ? null : this.Listener.JwtService;
         }
 
         public string Id { get; }
@@ -76,6 +77,9 @@ namespace EmbedIO.Net.Internal
         internal HttpListener? Listener { get; set; }
 
         internal HttpConnection Connection { get; }
+
+        public JwtService JwtService { get; set; }
+        HttpListener IHttpContext.Listener { get; set; }
 
         public void SetHandled() => IsHandled = true;
 

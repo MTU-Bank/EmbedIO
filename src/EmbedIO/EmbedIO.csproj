@@ -4,7 +4,7 @@
     <Description>A tiny, cross-platform, module based, MIT-licensed web server. Supporting NET Framework, Net Core, and Mono.</Description>
     <AssemblyTitle>EmbedIO Web Server</AssemblyTitle>
     <Authors>Unosquare, and Contributors to EmbedIO</Authors>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>EmbedIO</AssemblyName>
     <PackageId>EmbedIO</PackageId>
@@ -30,7 +30,12 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
     <PackageReference Include="Unosquare.Swan.Lite" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MTUModelContainer\MTUModelContainer.csproj" />
   </ItemGroup>
   
 </Project>

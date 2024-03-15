@@ -69,6 +69,8 @@ namespace EmbedIO.Net.Internal
 
         public MimeTypeProviderStack MimeTypeProviders { get; } = new MimeTypeProviderStack();
 
+        public HttpListener Listener { get; set; }
+
         public void SetHandled() => IsHandled = true;
 
         public void OnClose(Action<IHttpContext> callback)

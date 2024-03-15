@@ -43,6 +43,11 @@ namespace EmbedIO
         string Name { get; }
 
         /// <summary>
+        /// Jwt Service for Auth routine
+        /// </summary>
+        JwtService JwtService { get; set; }
+
+        /// <summary>
         /// Starts this listener.
         /// </summary>
         void Start();

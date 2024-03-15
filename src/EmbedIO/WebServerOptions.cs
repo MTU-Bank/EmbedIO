@@ -170,6 +170,14 @@ namespace EmbedIO
         }
 
         /// <summary>
+        /// JwtService for auth verificartion.
+        /// </summary>
+        public JwtService JwtService
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// Adds a URL prefix.
         /// </summary>
         /// <param name="urlPrefix">The URL prefix.</param>

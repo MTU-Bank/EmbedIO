@@ -172,6 +172,7 @@ namespace EmbedIO
             };
 
             var listener = DoCreate();
+            listener.JwtService = this.Options.JwtService;
             $"Running HTTPListener: {listener.Name}".Info(LogSource);
 
             foreach (var prefix in Options.UrlPrefixes)

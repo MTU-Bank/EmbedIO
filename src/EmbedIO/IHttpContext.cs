@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
+using EmbedIO.Net;
 using EmbedIO.Routing;
 using EmbedIO.Sessions;
+using MTUModelContainer.Database.Models;
 
 namespace EmbedIO
 {
@@ -104,6 +107,45 @@ namespace EmbedIO
         /// <seealso cref="SetHandled" />
         /// <seealso cref="IWebModule.IsFinalHandler"/>
         bool IsHandled { get; }
+
+        /// <summary>
+        /// Allows to get current authed MTUBank user
+        /// </summary>
+        public User? CurrentUser { get
+            {
+                // get JWT token from Bearer auth header
+                var token = Request.Headers["Authentication"];
+                if (token is null) return null;
+
+                // process JWT
+                var principal = JwtService.GetPrincipal(token);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Allows to get current token (raw)
+        /// </summary>
+        public string? CurrentToken
+        {
+            get
+            {
+                // get JWT token from Bearer auth header
+                var token = Request.Headers["Authentication"];
+                if (token is null) return null;
+
+                // process the token
+                var split = token.Split(' ').LastOrDefault();
+                return split;
+            }
+        }
+
+        public JwtService JwtService
+        {
+            get => Listener.JwtService;
+        }
+
+        public EmbedIO.Net.HttpListener Listener { get; set; }
 
         /// <summary>
         /// <para>Marks this context as handled, so that it will not be
