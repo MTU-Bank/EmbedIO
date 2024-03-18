@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using EmbedIO.Net;
 using EmbedIO.Routing;
 using EmbedIO.Sessions;
 using MTUModelContainer.Database.Models;
+using Swan;
 
 namespace EmbedIO
 {
@@ -113,13 +115,48 @@ namespace EmbedIO
         /// </summary>
         public User? CurrentUser { get
             {
+                // get claims
+                var claims = CurrentClaims;
+
+                // recreate the abstract user
+                var user = new User();
+                var props = typeof(User).GetProperties();
+                foreach (var claim in claims.Claims)
+                {
+                    var typeName = claim.Type;
+                    var claimVal = claim.Value;
+
+                    var apprProp = props.FirstOrDefault(p => p.Name == typeName);
+                    if (apprProp is null) continue;
+
+                    // attempt to set the value
+                    if (apprProp.PropertyType == typeof(string)) 
+                        apprProp.SetValue(user, string.IsNullOrEmpty(claimVal) ? null : claimVal);
+                    if (apprProp.PropertyType.IsEnum)
+                        apprProp.SetValue(user, Enum.Parse(apprProp.PropertyType, claimVal));
+                }
+
+                return user;
+            }
+        }
+
+        public ClaimsPrincipal? CurrentClaims
+        {
+            get
+            {
                 // get JWT token from Bearer auth header
-                var token = Request.Headers["Authentication"];
+                var token = CurrentToken;
                 if (token is null) return null;
 
                 // process JWT
-                var principal = JwtService.GetPrincipal(token);
-                return null;
+                try
+                {
+                    var principal = JwtService.GetPrincipal(token);
+                    return principal;
+                } catch
+                {
+                    return null;
+                }
             }
         }
 
@@ -131,7 +168,7 @@ namespace EmbedIO
             get
             {
                 // get JWT token from Bearer auth header
-                var token = Request.Headers["Authentication"];
+                var token = Request.Headers["Authorization"];
                 if (token is null) return null;
 
                 // process the token

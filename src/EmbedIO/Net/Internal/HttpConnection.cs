@@ -30,9 +30,11 @@ namespace EmbedIO.Net.Internal
         private LineState _lineState = LineState.None;
         private int _position;
         private string? _errorMessage;
+        public IHttpListener listener;
 
-        public HttpConnection(Socket sock, EndPointListener epl)
+        public HttpConnection(Socket sock, EndPointListener epl, IHttpListener listener)
         {
+            this.listener = listener;
             _sock = sock;
             _epl = epl;
             IsSecure = epl.Secure;
@@ -187,7 +189,7 @@ namespace EmbedIO.Net.Internal
             _position = 0;
             _inputState = InputState.RequestLine;
             _lineState = LineState.None;
-            _context = new HttpListenerContext(this);
+            _context = new HttpListenerContext(this, listener);
         }
 
         private void OnTimeout(object unused)

@@ -254,7 +254,7 @@ namespace EmbedIO.Net.Internal
             HttpConnection conn;
             try
             {
-                conn = new HttpConnection(accepted, epl);
+                conn = new HttpConnection(accepted, epl, epl.Listener);
             }
             catch
             {

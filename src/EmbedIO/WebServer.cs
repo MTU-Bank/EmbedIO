@@ -94,7 +94,7 @@ namespace EmbedIO
         public WebServer(WebServerOptions options)
             : base(options)
         {
-            Listener = CreateHttpListener();
+            Listener = CreateHttpListener(this, options.JwtService);
         }
 
         /// <summary>
@@ -103,10 +103,10 @@ namespace EmbedIO
         /// <param name="configure">A callback that will be used to configure
         /// the server's options.</param>
         /// <exception cref="ArgumentNullException"><paramref name="configure"/> is <see langword="null"/>.</exception>
-        public WebServer(Action<WebServerOptions> configure)
+        public WebServer(Action<WebServerOptions> configure, JwtService jwtService = null)
             : base(configure)
         {
-            Listener = CreateHttpListener();
+            Listener = CreateHttpListener(this, jwtService);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace EmbedIO
         /// <inheritdoc />
         protected override void OnFatalException() => Listener?.Dispose();
 
-        private IHttpListener CreateHttpListener()
+        private IHttpListener CreateHttpListener(WebServer initiator, JwtService jwtService)
         {
             IHttpListener DoCreate() => Options.Mode switch {
                 HttpListenerMode.Microsoft => System.Net.HttpListener.IsSupported 
@@ -172,7 +172,9 @@ namespace EmbedIO
             };
 
             var listener = DoCreate();
-            listener.JwtService = this.Options.JwtService;
+            this.Options.JwtService = jwtService;
+            listener.JwtService = jwtService;
+            listener.WebServer = initiator;
             $"Running HTTPListener: {listener.Name}".Info(LogSource);
 
             foreach (var prefix in Options.UrlPrefixes)

@@ -46,6 +46,7 @@ namespace EmbedIO
         /// Jwt Service for Auth routine
         /// </summary>
         JwtService JwtService { get; set; }
+        WebServer WebServer { get; set; }
 
         /// <summary>
         /// Starts this listener.

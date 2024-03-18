@@ -56,6 +56,7 @@ namespace EmbedIO.Net
         /// </value>
         internal X509Certificate? Certificate { get; }
         public JwtService JwtService { get; set; }
+        public WebServer WebServer { get; set; }
 
         /// <inheritdoc />
         public void Start()

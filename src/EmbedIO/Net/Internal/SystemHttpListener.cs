@@ -34,6 +34,7 @@ namespace EmbedIO.Net.Internal
         /// <inheritdoc />
         public string Name { get; } = "Microsoft HTTP Listener";
         public JwtService JwtService { get; set; }
+        public WebServer WebServer { get; set; }
 
         /// <inheritdoc />
         public void Start() => _httpListener.Start();

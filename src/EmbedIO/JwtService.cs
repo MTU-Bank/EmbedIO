@@ -17,13 +17,11 @@ namespace EmbedIO
     public class JwtService
     {
         private readonly string _issuer;
-        private readonly SecurityKey _key;
-        private readonly string _encryptionKey;
+        private readonly byte[] _encryptionKey;
 
-        public JwtService(string issuer, SecurityKey key, string encryptionKey)
+        public JwtService(string issuer, byte[] encryptionKey)
         {
             _issuer = issuer;
-            _key = key;
             _encryptionKey = encryptionKey;
         }
 
@@ -37,7 +35,8 @@ namespace EmbedIO
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _issuer,
-                IssuerSigningKey = _key,
+                IssuerSigningKey = new SymmetricSecurityKey(_encryptionKey),
+                TokenDecryptionKey = new SymmetricSecurityKey(_encryptionKey),
             };
 
             SecurityToken validatedToken;
@@ -53,11 +52,14 @@ namespace EmbedIO
                 Subject = new ClaimsIdentity(BuildClaims(u)),
                 Expires = DateTime.UtcNow.AddHours(1),
                 Issuer = _issuer,
-                SigningCredentials = new SigningCredentials(_key, SecurityAlgorithms.RsaSha256),
                 EncryptingCredentials = new EncryptingCredentials(
-                    new SymmetricSecurityKey(sha2(_encryptionKey)), 
+                    new SymmetricSecurityKey(_encryptionKey), 
                     SecurityAlgorithms.Aes256KW,
                     SecurityAlgorithms.Aes256CbcHmacSha512),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(_encryptionKey),
+                    SecurityAlgorithms.HmacSha256Signature
+                ),
             };
 
             tokenDescriptor.Subject.AddClaim(new Claim("type", type));
@@ -89,14 +91,6 @@ namespace EmbedIO
             }
 
             return claims.ToArray();
-        }
-
-        private byte[] sha2(string v)
-        {
-            using (var s = SHA256.Create())
-            {
-                return s.ComputeHash(Encoding.UTF8.GetBytes(v));
-            }
         }
     }
 }

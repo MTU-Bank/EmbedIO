@@ -26,7 +26,7 @@ namespace EmbedIO.Net.Internal
 
         private bool _closed;
 
-        internal HttpListenerContext(HttpConnection cnc)
+        internal HttpListenerContext(HttpConnection cnc, IHttpListener listener)
         {
             Connection = cnc;
             HttpListenerRequest = new HttpListenerRequest(this);
@@ -37,6 +37,7 @@ namespace EmbedIO.Net.Internal
             RemoteEndPoint = Request.RemoteEndPoint;
             Route = RouteMatch.None;
             Session = SessionProxy.None;
+            this.Listener = (HttpListener)listener;
             this.JwtService = this.Listener is null ? null : this.Listener.JwtService;
         }
 
